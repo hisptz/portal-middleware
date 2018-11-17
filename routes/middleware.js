@@ -4,7 +4,7 @@ const cheerio = require('cheerio');
 /**
  * TODO: Server address and credentials should be configured in configuration file
 */
-var URL = 'url';
+var URL = 'server address';
 var credentials = 'username:password';
 
 var request = require('request');
@@ -23,10 +23,15 @@ router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
      */
     var path = req.url.replace('/middleware','');
     // see the path
+    var urlExtract = '';
     console.log('PATH middleware', path);
     if (path.indexOf('extract') > 0) {
         console.log('extract');
-        var urlExtract = 'http://nacp.go.tz/site/news/HSHSPIIIcostingreportFINAL.json';
+        if (path.indexOf('who-factbuffects') > 0) {
+            urlExtract = 'http://www.who.int/gho/en/'
+        } else {
+            urlExtract = 'http://nacp.go.tz/site/news/HSHSPIIIcostingreportFINAL.json';
+        }
         var Promise = require('promise');
         var promise = new Promise(function (resolve, reject) {
             var headers = {
@@ -48,8 +53,14 @@ router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
                         $('.panel-success').each(function (index, successDom) {
                             $(successDom).replaceWith('');
                         });
-                        $('.panel-title').replaceWith('<h3 style="text-align: left; margin-top: 20px; font-weight: 500; font-size: 1.4em;">More news from NACP news page</h3>')
-                        var extractedData = $('.main-content .col-lg-8').replaceWith('').removeAttr('class');
+                        $('.panel-title').replaceWith('<h3 style="text-align: left; margin-top: 20px; font-weight: 500; font-size: 1.4em;">More news from NACP news page</h3>');
+                        $('#factbuffets h2').replaceWith('<h3 style="color: #2A8FD1;">fact buffet (from GHO)</h3>')
+                        var extractedData = '';
+                        if (path.indexOf('who-factbuffects') > 0) {
+                            extractedData = $('#factbuffets');
+                        } else {
+                            extractedData = $('.main-content .col-lg-8').replaceWith('').removeAttr('class');
+                        }
                         var data = {
                             "data": extractedData.toString()
                         }
