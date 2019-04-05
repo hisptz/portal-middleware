@@ -1,32 +1,34 @@
-var express = require('express');
-var router = express.Router();
-const cheerio = require('cheerio');
-/**
- * TODO: Server address and credentials should be configured in configuration file
-*/
-var URL = 'https://play.dhis2.org/2.30/';
-var credentials = 'admin:district';
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const configurationsRaw = fs.readFileSync('config.json');
+const configurations = JSON.parse(configurationsRaw)
+const request = require('request');
 
-var request = require('request');
+router.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 // route with regular Expression to escape some characters
 router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
+    const middlewareKey = req.url.split('/')[1]
+    const instanceType = req.url.split('/')[2];
+    const baseUrl = configurations[instanceType]['instance'];
+    const credentials = configurations[instanceType]['username'] + ':' + configurations[instanceType]['password'];
+    const path = req.url.replace('/' + middlewareKey,'').replace('/' + instanceType, '');
+    console.log(baseUrl + path)
     // define headers
-    var headers = {
+    const headers = {
         'Content-Type': 'application/json',
         "Authorization": 'Basic ' + new Buffer.from(credentials).toString('base64')
     }
-
-    // replace portal-middleware with the path of here your portal reference
-    /**
-     * *TODO: put this in the configuration file
-     */
-    var path = req.url.replace('/portal-middleware','');
-    var Promise = require('promise');
-    var promise = new Promise(function (resolve, reject) {
+    const Promise = require('promise');
+    const promise = new Promise(function (resolve, reject) {
         request({
                 headers: headers,
-                uri: URL + path,
+                uri: baseUrl + path,
                 method: 'GET'
             },
             function (error, response, body) {
@@ -50,23 +52,23 @@ router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
 
 router.put(/\/(\d*)\/?(edit)?/, function(req, res, next) {
     const data = req.body;
+    const middlewareKey = req.url.split('/')[1]
+    const instanceType = req.url.split('/')[2];
+    const baseUrl = configurations[instanceType]['instance'];
+    const credentials = configurations[instanceType]['username'] + ':' + configurations[instanceType]['password'];
+    const path = req.url.replace('/' + middlewareKey,'').replace('/' + instanceType, '');
     // define headers
-    var headers = {
+    const headers = {
         'Content-Type': 'application/json',
         "Authorization": 'Basic ' + new Buffer.from(credentials).toString('base64')
     }
 
-    // replace portal-middleware with the path of here your portal reference
-    /**
-     * *TODO: put this in the configuration file
-     */
-    var path = req.url.replace('/portal-middleware','');
-    var Promise = require('promise');
-    var promise = new Promise(function (resolve, reject) {
+    const Promise = require('promise');
+    const promise = new Promise(function (resolve, reject) {
     request(
         {
           headers: headers,
-          url: URL + path,
+          url: baseUrl + path,
           method: "PUT",
           json: true,
           body: data
