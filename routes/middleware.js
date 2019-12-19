@@ -19,7 +19,7 @@ router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
     Authorization: "Basic " + new Buffer.from(credentials).toString("base64")
   };
 
-  var path = req.url.replace("/" + middlewareKey, "");
+  var path = req.url.replace("/portal-middleware-live", "");
   const Promise = require("promise");
 
   const uri = baseUrl + path;
@@ -60,15 +60,10 @@ router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
 router.put(/\/(\d*)\/?(edit)?/, function(req, res, next) {
   const data = req.body;
   const middlewareKey = req.url.split("/")[1];
-  const instanceType = req.url.split("/")[2];
-  const baseUrl = configurations[instanceType]["instance"];
+  const baseUrl = configurations["instance"];
   const credentials =
-    configurations[instanceType]["username"] +
-    ":" +
-    configurations[instanceType]["password"];
-  const path = req.url
-    .replace("/" + middlewareKey, "")
-    .replace("/" + instanceType, "");
+    configurations["username"] + ":" + configurations["password"];
+  const path = req.url.replace("/portal-middleware-live", "");
   // define headers
   const headers = {
     "Content-Type": "application/json",
