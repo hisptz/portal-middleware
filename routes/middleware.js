@@ -9,7 +9,6 @@ const lookup = {};
 
 // route with regular Expression to escape some characters
 router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
-  console.log(req.url.split("/"))
   const middlewareKey = req.url.split("/")[1];
   const baseUrl = configurations["instance"];
   const credentials =
@@ -62,6 +61,47 @@ router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
     res.send(result);
   });
 });
+
+router.post(/\/(\d*)\/?(edit)?/, function(req, res, next) {
+  const data = req.body;
+  const middlewareKey = req.url.split("/")[1];
+  const baseUrl = configurations["instance"];
+  const credentials =
+    configurations["username"] + ":" + configurations["password"];
+  const path = req.url.replace("/middleware", "");
+  // define headers
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: "Basic " + new Buffer.from(credentials).toString("base64")
+  };
+
+  console.log(data)
+
+  const Promise = require("promise");
+  const promise = new Promise(function(resolve, reject) {
+    request(
+      {
+        "rejectUnauthorized": false,
+        headers: headers,
+        url: baseUrl + path,
+        method: "POST",
+        json: true,
+        body: data
+      },
+      (err, res, body) => {
+        if (!err) {
+          resolve(body);
+        } else {
+          reject(err);
+        }
+      }
+    );
+  });
+
+  promise.then(function(result) {
+    res.send(result);
+  });
+})
 
 router.put(/\/(\d*)\/?(edit)?/, function(req, res, next) {
   const data = req.body;
