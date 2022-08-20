@@ -1,14 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
-const configurationsRaw = fs.readFileSync("config.json");
-const configurations = JSON.parse(configurationsRaw);
+const configurations = require("../config/config");
 const request = require("request");
 
 const lookup = {};
-
 // route with regular Expression to escape some characters
-router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
+router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
   const middlewareKey = req.url.split("/")[1];
   const baseUrl = configurations["instance"];
   const credentials =
@@ -16,7 +13,7 @@ router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
   // define headers
   const headers = {
     "Content-Type": "application/json",
-    Authorization: "Basic " + new Buffer.from(credentials).toString("base64")
+    Authorization: "Basic " + new Buffer.from(credentials).toString("base64"),
   };
 
   var path = req.url.replace("/portal-middleware-live", "");
@@ -25,17 +22,17 @@ router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
   const uri = baseUrl + path;
   const availableContent = lookup[uri];
   const promise = availableContent
-    ? new Promise(function(resolve, reject) {
+    ? new Promise(function (resolve, reject) {
         resolve(availableContent);
       })
-    : new Promise(function(resolve, reject) {
+    : new Promise(function (resolve, reject) {
         request(
           {
             headers: headers,
             uri,
-            method: "GET"
+            method: "GET",
           },
-          function(error, response, body) {
+          function (error, response, body) {
             if (!error && response.statusCode == 200) {
               const receivedContent = JSON.parse(body);
               lookup[uri] = receivedContent;
@@ -52,12 +49,12 @@ router.get(/\/(\d*)\/?(edit)?/, function(req, res, next) {
         );
       });
   // send when the results are completely loaded
-  promise.then(function(result) {
+  promise.then(function (result) {
     res.send(result);
   });
 });
 
-router.put(/\/(\d*)\/?(edit)?/, function(req, res, next) {
+router.put(/\/(\d*)\/?(edit)?/, function (req, res, next) {
   const data = req.body;
   const middlewareKey = req.url.split("/")[1];
   const baseUrl = configurations["instance"];
@@ -67,18 +64,18 @@ router.put(/\/(\d*)\/?(edit)?/, function(req, res, next) {
   // define headers
   const headers = {
     "Content-Type": "application/json",
-    Authorization: "Basic " + new Buffer.from(credentials).toString("base64")
+    Authorization: "Basic " + new Buffer.from(credentials).toString("base64"),
   };
 
   const Promise = require("promise");
-  const promise = new Promise(function(resolve, reject) {
+  const promise = new Promise(function (resolve, reject) {
     request(
       {
         headers: headers,
         url: baseUrl + path,
         method: "PUT",
         json: true,
-        body: data
+        body: data,
       },
       (err, res, body) => {
         if (!err) {
@@ -90,7 +87,7 @@ router.put(/\/(\d*)\/?(edit)?/, function(req, res, next) {
     );
   });
 
-  promise.then(function(result) {
+  promise.then(function (result) {
     res.send(result);
   });
 });
