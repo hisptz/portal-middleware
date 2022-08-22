@@ -12,6 +12,7 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
     configurations["username"] + ":" + configurations["password"];
   const headers = {
     "Content-Type": "application/json",
+    Accept: "application/json",
     Authorization: "Basic " + new Buffer.from(credentials).toString("base64"),
   };
 
@@ -67,6 +68,7 @@ router.put(/\/(\d*)\/?(edit)?/, function (req, res, next) {
   const path = req.url.replace("/portal-middleware-live", "");
   // define headers
   const headers = {
+    Accept: "application/json",
     "Content-Type": "application/json",
     Authorization: "Basic " + new Buffer.from(credentials).toString("base64"),
   };
