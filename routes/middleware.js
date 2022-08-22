@@ -38,7 +38,12 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
             } else {
               if (response) {
                 console.log(response.statusCode + ":", JSON.stringify(error));
-                console.log("URI FAILED:::", uri);
+                console.log(
+                  "URI FAILED:::",
+                  uri,
+                  "ERROR::",
+                  JSON.stringify(error)
+                );
                 reject();
               }
               reject();
