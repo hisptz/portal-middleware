@@ -2,23 +2,22 @@ const express = require("express");
 const router = express.Router();
 const configurations = require("../config/config");
 const request = require("request");
+const Promise = require("promise");
 
 const lookup = {};
 // route with regular Expression to escape some characters
 router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
-  const middlewareKey = req.url.split("/")[1];
-  console.log("MIDDLEWARE", middlewareKey);
   const baseUrl = configurations["instance"];
   const credentials =
     configurations["username"] + ":" + configurations["password"];
-  // define headers
   const headers = {
     "Content-Type": "application/json",
     Authorization: "Basic " + new Buffer.from(credentials).toString("base64"),
   };
 
-  var path = req.url.replace("/portal-middleware-live", "");
-  const Promise = require("promise");
+  console.log("HEADERS::", headers);
+
+  var path = req.url.replace(configurations.replaceKey, "");
 
   const uri = baseUrl + path;
   console.log("URI", uri);
