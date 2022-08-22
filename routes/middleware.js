@@ -44,6 +44,7 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
                   "ERROR::",
                   JSON.stringify(error)
                 );
+                console.log("RESPONSE", response);
                 reject();
               }
               reject();
