@@ -7,6 +7,7 @@ const lookup = {};
 // route with regular Expression to escape some characters
 router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
   const middlewareKey = req.url.split("/")[1];
+  console.log("MIDDLEWARE", middlewareKey);
   const baseUrl = configurations["instance"];
   const credentials =
     configurations["username"] + ":" + configurations["password"];
@@ -20,6 +21,7 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
   const Promise = require("promise");
 
   const uri = baseUrl + path;
+  console.log("URI", uri);
   const availableContent = lookup[uri];
   const promise = availableContent
     ? new Promise(function (resolve, reject) {
