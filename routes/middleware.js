@@ -15,12 +15,9 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
     Authorization: "Basic " + new Buffer.from(credentials).toString("base64"),
   };
 
-  console.log("HEADERS::", headers);
-
   var path = req.url.replace(configurations.replaceKey, "");
 
   const uri = baseUrl + path;
-  console.log("URI", uri);
   const availableContent = lookup[uri];
   const promise = availableContent
     ? new Promise(function (resolve, reject) {
@@ -41,10 +38,10 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
             } else {
               if (response) {
                 console.log(response.statusCode + ":", JSON.stringify(error));
+                console.log("URI FAILED:::", uri);
                 reject();
-              } else {
-                console.log(response);
               }
+              reject();
             }
           }
         );
