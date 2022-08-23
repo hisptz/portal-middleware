@@ -19,7 +19,7 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
   var path = req.url.replace(configurations.replaceKey, "");
 
   if (path.includes("/api/me?")) {
-    path = "/api/me";
+    path = "/api/users?filter=username:eq:" + configurations.username;
   }
 
   const uri = baseUrl + path;
