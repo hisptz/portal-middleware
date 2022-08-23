@@ -18,6 +18,10 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
 
   var path = req.url.replace(configurations.replaceKey, "");
 
+  if (path.includes("/api/me?")) {
+    path = "/api/me";
+  }
+
   const uri = baseUrl + path;
   const availableContent = lookup[uri];
   const promise = availableContent
@@ -39,12 +43,6 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
             } else {
               if (response) {
                 console.log(response.statusCode + ":", JSON.stringify(error));
-                console.log(
-                  "URI FAILED:::",
-                  uri,
-                  "ERROR::",
-                  JSON.stringify(error)
-                );
                 console.log("RESPONSE", response);
                 reject();
               }
