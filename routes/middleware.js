@@ -37,13 +37,16 @@ router.get(/\/(\d*)\/?(edit)?/, (req, res, next) => {
           },
           function (error, response, body) {
             if (!error && response.statusCode == 200) {
-              const receivedContent = JSON.parse(body);
-              lookup[uri] = receivedContent;
-              resolve(receivedContent);
+              try {
+                const receivedContent = JSON.parse(body);
+                lookup[uri] = receivedContent;
+                resolve(receivedContent);
+              } catch (error) {
+                resolve(error);
+              }
             } else {
               if (response) {
                 console.log(response.statusCode + ":", JSON.stringify(error));
-                console.log("RESPONSE", response);
                 reject();
               }
               reject();
